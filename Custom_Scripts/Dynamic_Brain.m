@@ -1,0 +1,78 @@
+% Load the coactivation matrix and coordinates
+data = load('/home/davbaz/MATLAB/Toolboxes/BCT/2019_03_03_BCT/data_and_demos/Coactivation_matrix.mat');
+Cij = data.Coactivation_matrix; % Adjacency matrix
+Coord = data.Coord;             % Coordinates (x, y, z)
+
+% Convert weights into costs for weighted distance calculations
+Cost = 1 ./ Cij; % Transform weights into costs (inverse of connectivity)
+Cost(Cij == 0) = Inf; % Set cost to infinity for non-connections
+
+% Calculate the weighted distance matrix
+D_wei = distance_wei(Cost);
+
+% Calculate weighted path length and efficiency
+[lambda_wei, efficiency_wei] = charpath(D_wei);
+
+% Display the results
+fprintf('Weighted Path Length (lambda): %.4f\n', lambda_wei);
+fprintf('Weighted Efficiency: %.4f\n', efficiency_wei);
+
+% Threshold the matrix to include only significant connections
+threshold = 0.07; % Adjust as needed
+Cij_thresh = Cij > threshold;
+
+% Use adjacency_plot_und to get edge data for visualization
+[X, Y, Z] = adjacency_plot_und(Cij_thresh, Coord);
+
+% Initialize the dynamic state
+n_nodes = size(Cij_thresh, 1);
+state = zeros(n_nodes, 1); % 0: Susceptible (Blue), 1: Infected (Red)
+initial_node = randi(n_nodes); % Randomly pick an initial infected node
+state(initial_node) = 1; % Set the initial infected node
+
+% Number of transitions and infection probability
+n_steps = 10;
+p_infect = 0.5; % Probability of infection per connection
+
+% Visualize the initial state
+figure;
+% Plot edges
+plot3(X, Y, Z, 'k-', 'LineWidth', 0.5); % Edges as black lines
+hold on;
+% Plot nodes
+node_colors = [0 0 1] .* (1 - state) + [1 0 0] .* state; % Blue for susceptible, red for infected
+scatter3(Coord(:,1), Coord(:,2), Coord(:,3), 50, node_colors, 'filled');
+title('3D Brain Network - Dynamic States');
+xlabel('X Coordinate');
+ylabel('Y Coordinate');
+zlabel('Z Coordinate');
+grid on;
+
+% Update the states dynamically
+for t = 1:n_steps
+    % Identify newly infected nodes
+    infected_nodes = find(state == 1); % Indices of infected nodes
+    susceptible_nodes = find(state == 0); % Indices of susceptible nodes
+    for s = susceptible_nodes'
+        % Check if the node is connected to any infected node
+        connections = D_wei(s, infected_nodes); % Weighted distances to infected nodes
+        if any(connections < Inf) && rand() < p_infect
+            state(s) = 1; % Transition to infected with probability p_infect
+        end
+    end
+
+    % Update the visualization
+    cla; % Clear previous plot
+    % Re-plot edges
+    plot3(X, Y, Z, 'k-', 'LineWidth', 0.5); % Edges as black lines
+    hold on;
+    % Re-plot nodes
+    node_colors = [0 0 1] .* (1 - state) + [1 0 0] .* state; % Blue for susceptible, red for infected
+    scatter3(Coord(:,1), Coord(:,2), Coord(:,3), 50, node_colors, 'filled');
+    title(['3D Brain Network - Dynamic States (Step ', num2str(t), ')']);
+    xlabel('X Coordinate');
+    ylabel('Y Coordinate');
+    zlabel('Z Coordinate');
+    grid on;
+    pause(1); % Pause for visualization
+end
