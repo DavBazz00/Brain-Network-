@@ -63,6 +63,16 @@ These scripts were developed by the team to extend and apply BCT functionality. 
   - Visualizes the brain network in 3D, highlighting specific nodes (e.g., initial states).
   - Useful for understanding the structure and initial setup of the network.
 
+- **`Visualization_Brain.m`**:
+  - Visualizes the connectivity matrix using the `imagesc` command. This command shows the connectivity matrix as a  grid.
+  - The strongest connections are assigned warm colors while non-existent or weak connections are assigned cooler colors.
+ 
+- **`Community.m`**:
+   - Groups nodes in communities.
+   - Uses an implemented funtction in the *Brain Connectivity Toolbox* as the `community_louvain` function.
+   - The final community assignments for each node is made after averaging over multiple runs since the `community_louvain` function is stochastic.
+
+---
 
 ## How to Run
 ### Prerequisites
