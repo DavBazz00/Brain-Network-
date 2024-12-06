@@ -27,12 +27,6 @@ These files store the core data used for analysis and simulations:
   - Contains the adjacency matrix representing coactivation between brain regions.
   - Includes `Coord`, a matrix of 3D spatial coordinates for nodes.
 
-- **`GroupAverage_rsfMRI_matrix.mat`**:
-  - Stores an averaged resting-state functional connectivity matrix.
-
-- **`macaque47.mat` / `macaque71.mat`**:
-  - Adjacency matrices for structural brain networks of macaque monkeys.
-
 ---
 
 ### **Brain Connectivity Toolbox Scripts** (Original Files)
@@ -43,9 +37,6 @@ These files are part of the BCT and provide the foundational functions for our a
 
 - **`resource_efficiency_bin.m`**:
   - Calculates resource efficiency and shortest-path probabilities between nodes.
-
-- **`demo_efficiency_measures.m`**:
-  - Demonstrates how to compute efficiency measures on example data.
 
 - **`adjacency_plot_und.m`**:
   - Plots adjacency matrices for undirected graphs.
