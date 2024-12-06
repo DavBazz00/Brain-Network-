@@ -31,15 +31,15 @@ These files store the core data used for analysis and simulations:
 
 ### **Brain Connectivity Toolbox Scripts** (Original Files)
 These files are part of the BCT and provide the foundational functions for our analysis:
+- **`adjacency_plot_und.m`**:
+  - Plots adjacency matrices for undirected graphs.
+  - 
 - **`evaluate_generative_model.m`**:
   - Generates synthetic networks using generative models (e.g., spatial or clustering-based).
   - Evaluates the similarity of synthetic networks to real networks.
 
 - **`resource_efficiency_bin.m`**:
   - Calculates resource efficiency and shortest-path probabilities between nodes.
-
-- **`adjacency_plot_und.m`**:
-  - Plots adjacency matrices for undirected graphs.
 
 ---
 
