@@ -1,6 +1,6 @@
 # Brain Network Project
 
-This repository is part of a collaborative project to study and simulate dynamics on brain networks using the **Brain Connectivity Toolbox (BCT)**. Our goal is to analyze network properties, simulate dynamics (e.g., Susceptible-Infected models), and visualize 3D brain networks based on coactivation data.
+This repository is part of a collaborative project to study and simulate dynamics on brain networks using the **Brain Connectivity Toolbox (BCT)** and custom implementations. Our goal is to analyze network properties, simulate dynamics (e.g., Susceptible-Infected models), and visualize 3D brain networks based on coactivation data.
 
 ---
 
@@ -9,19 +9,19 @@ Brain networks are modeled as graphs where:
 - **Nodes** represent brain regions.
 - **Edges** represent connections (e.g., coactivation or structural links).
 
-We leverage tools from the **BCT** to process, analyze, and simulate dynamics on these networks. This project primarily uses MATLAB for implementation.
+We use tools from the **BCT** alongside custom MATLAB scripts to process, analyze, and simulate dynamics on these networks.
 
 ---
 
 ## Key Features
 1. **3D Visualization**: Visualize brain networks in 3D using spatial coordinates of nodes.
 2. **Dynamic Simulations**: Simulate processes like signal propagation and infection spread using graph-based models.
-3. **Generative Models**: Generate synthetic brain networks to compare with real data.
+3. **Custom Implementations**: Expand the BCT with tailored scripts for visualization and dynamics.
 
 ---
 
 ## Important Files
-### 1. **Data Files** (in `data_and_demos/`)
+### **Data Files** (in `data_and_demos/`)
 These files store the core data used for analysis and simulations:
 - **`Coactivation_matrix.mat`**:
   - Contains the adjacency matrix representing coactivation between brain regions.
@@ -33,12 +33,10 @@ These files store the core data used for analysis and simulations:
 - **`macaque47.mat` / `macaque71.mat`**:
   - Adjacency matrices for structural brain networks of macaque monkeys.
 
-### 2. **Key Scripts**
-These scripts are central to our project:
-- **`Dynamic_Brain.m`**:
-  - Simulates dynamic processes (e.g., infection spread) on the brain network.
-  - Visualizes the network evolution in 3D over multiple time steps.
+---
 
+### **Brain Connectivity Toolbox Scripts** (Original Files)
+These files are part of the BCT and provide the foundational functions for our analysis:
 - **`evaluate_generative_model.m`**:
   - Generates synthetic networks using generative models (e.g., spatial or clustering-based).
   - Evaluates the similarity of synthetic networks to real networks.
@@ -49,14 +47,22 @@ These scripts are central to our project:
 - **`demo_efficiency_measures.m`**:
   - Demonstrates how to compute efficiency measures on example data.
 
-### 3. **Visualization Tools**
-- **`Brain_Map.m`**:
-  - Visualizes the brain network in 3D, highlighting specific nodes (e.g., initial states).
-
 - **`adjacency_plot_und.m`**:
   - Plots adjacency matrices for undirected graphs.
 
 ---
+
+### **Custom Scripts** (Created by Us)
+These scripts were developed by the team to extend and apply BCT functionality. **These are the files to modify and implement as needed:**
+- **`Dynamic_Brain.m`**:
+  - Simulates dynamic processes (e.g., infection spread) on the brain network.
+  - Visualizes the network evolution in 3D over multiple time steps.
+  - Implements Susceptible-Infected (SI) dynamics with probabilistic transitions.
+
+- **`Brain_Map.m`**:
+  - Visualizes the brain network in 3D, highlighting specific nodes (e.g., initial states).
+  - Useful for understanding the structure and initial setup of the network.
+
 
 ## How to Run
 ### Prerequisites
