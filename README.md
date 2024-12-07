@@ -9,7 +9,9 @@ Brain networks are modeled as graphs where:
 - **Nodes** represent brain regions.
 - **Edges** represent connections (e.g., coactivation or structural links).
 
-We use tools from the **BCT** alongside custom MATLAB scripts to process, analyze, and simulate dynamics on these networks.
+We use tools from the **BCT** alongside custom MATLAB scripts to process, analyze, and simulate dynamics on these networks. 
+
+We also suggest giving a quick read at this [repositroy](https://github.com/brain-networks/PSY-P457) on how to use the **BCT toolbox**.
 
 ---
 
