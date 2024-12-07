@@ -16,10 +16,6 @@ Cost = weight_conversion(Cij_norm, 'lengths'); % BCT function to convert weights
 % Calculate the weighted distance matrix
 D_wei = distance_wei(Cost); % BCT function to calculate the shortest path matrix
 
-% Calculate weighted path length and efficiency (optional)
-[lambda_wei, efficiency_wei] = charpath(D_wei); % BCT function to compute global measures
-fprintf('Weighted Path Length (lambda): %.4f\n', lambda_wei);
-fprintf('Weighted Efficiency: %.4f\n', efficiency_wei);
 
 % Use adjacency_plot_und to get edge data for visualization
 [X, Y, Z] = adjacency_plot_und(Cij_norm, Coord);
@@ -53,6 +49,8 @@ for t = 1:n_steps
     % Identify newly infected nodes
     infected_nodes = find(state == 1); % Indices of infected nodes
     susceptible_nodes = find(state == 0); % Indices of susceptible nodes
+    susceptible_nodes = susceptible_nodes(:); % Force column vector
+   
     for s = susceptible_nodes'
         % Check if the node is connected to any infected node using normalized weighted distances
         connections = D_wei(s, infected_nodes); % Weighted distances to infected nodes
@@ -77,3 +75,4 @@ for t = 1:n_steps
     grid on;
     pause(1); % Pause for visualization
 end
+
