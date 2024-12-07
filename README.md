@@ -31,15 +31,124 @@ These files store the core data used for analysis and simulations:
 
 ### **Brain Connectivity Toolbox Scripts** (Original Files)
 These files are part of the BCT and provide the foundational functions for our analysis:
-- **`adjacency_plot_und.m`**:
-  - Plots adjacency matrices for undirected graphs.
+
+### **Important Predefined Functions**
+
+The Brain Connectivity Toolbox provides a variety of powerful functions for analyzing brain networks. Below are some important predefined functions and their roles:
+
+#### **1. Community and Clustering Analysis**
+- **`agreement.m`**:
+  - **Purpose**: Computes an agreement matrix from multiple partitions, showing how often pairs of nodes are assigned to the same community.
+  - **Usage**:
+    ```matlab
+    D = agreement(Ci);
+    ```
+    - `Ci`: A matrix where each column represents a community partition.
+    - `D`: The resulting agreement matrix.
+
+- **`clique_communities.m`**:
+  - **Purpose**: Detects overlapping community structures in a binary undirected network using the clique percolation method.
+  - **Usage**:
+    ```matlab
+    M = clique_communities(A, cq_thr);
+    ```
+    - `A`: Binary adjacency matrix.
+    - `cq_thr`: Clique size threshold.
+
+- **`link_communities.m`**:
+  - **Purpose**: Identifies overlapping communities using hierarchical clustering of network links.
+  - **Usage**:
+    ```matlab
+    M = link_communities(W, 'complete');
+    ```
+    - `W`: Directed (binary or weighted) connection matrix.
+    - `'complete'`: Optional clustering type (default is `'single'`).
+
+---
+
+#### **2. Network Backbone and Synthetic Networks**
+- **`backbone_wu.m`**:
+  - **Purpose**: Extracts the backbone of a weighted undirected network using a minimum-spanning-tree algorithm.
+  - **Usage**:
+    ```matlab
+    [CIJtree, CIJclus] = backbone_wu(CIJ, avgdeg);
+    ```
+    - `CIJ`: Weighted undirected connection matrix.
+    - `avgdeg`: Desired average degree of the backbone.
 
 - **`evaluate_generative_model.m`**:
-  - Generates synthetic networks using generative models (e.g., spatial or clustering-based).
-  - Evaluates the similarity of synthetic networks to real networks.
+  - **Purpose**: Generates synthetic networks and evaluates their energy functions using specified generative rules.
+  - **Usage**:
+    ```matlab
+    [B, E, K] = evaluate_generative_model(A, Atgt, D, 'sptl', 'powerlaw', params);
+    ```
+    - `A`: Binary seed connections.
+    - `D`: Euclidean distance matrix.
+    - `'sptl'`: Generative model type (e.g., spatial model).
+    - `'powerlaw'`: Generative model variant.
+    - `params`: Model parameters.
 
-- **`resource_efficiency_bin.m`**:
-  - Calculates resource efficiency and shortest-path probabilities between nodes.
+- **`generative_model.m`**:
+  - **Purpose**: Runs generative model simulations to create synthetic networks.
+  - **Usage**:
+    ```matlab
+    B = generative_model(A, D, m, 'neighbors', {'powerlaw'}, params);
+    ```
+
+---
+
+#### **3. Centrality Measures**
+- **`pagerank_centrality.m`**:
+  - **Purpose**: Computes the PageRank centrality, a variant of eigenvector centrality, to rank nodes in the network.
+  - **Usage**:
+    ```matlab
+    r = pagerank_centrality(A, 0.85, falff);
+    ```
+    - `A`: Adjacency matrix.
+    - `0.85`: Damping factor (typical value).
+    - `falff`: Initial PageRank probabilities.
+
+- **`subgraph_centrality.m`**:
+  - **Purpose**: Calculates the subgraph centrality, a measure of the weighted sum of closed walks for each node.
+  - **Usage**:
+    ```matlab
+    Cs = subgraph_centrality(CIJ);
+    ```
+
+---
+
+#### **4. Functional and Structural Network Analysis**
+- **`generate_fc.m`**:
+  - **Purpose**: Generates synthetic functional connectivity (FC) matrices using structural connectivity (SC) as predictors.
+  - **Usage**:
+    ```matlab
+    [FCpre, pred_data, Fcorr] = generate_fc(SC, beta, ED, {'SPLwei_log', 'SIwei_log'}, FC);
+    ```
+    - `SC`: Structural connectivity matrix.
+    - `beta`: Regression coefficients.
+    - `ED`: Euclidean distance matrix (optional).
+
+- **`get_components.m`**:
+  - **Purpose**: Identifies connected components of a binary undirected network.
+  - **Usage**:
+    ```matlab
+    [comps, comp_sizes] = get_components(adj);
+    ```
+    - `adj`: Binary undirected adjacency matrix.
+
+---
+
+### **Quick Reference**
+| **Function**             | **Purpose**                             | **Key Input**         | **Key Output**            |
+|---------------------------|-----------------------------------------|-----------------------|---------------------------|
+| `agreement.m`            | Compute agreement matrix               | Partitions (`Ci`)     | Agreement matrix (`D`)   |
+| `clique_communities.m`   | Detect overlapping communities          | Binary adjacency (`A`)| Community affiliation (`M`) |
+| `backbone_wu.m`          | Extract network backbone                | Weighted matrix (`CIJ`)| Backbone matrices         |
+| `pagerank_centrality.m`  | Compute PageRank centrality             | Adjacency (`A`)       | PageRank vector (`r`)    |
+| `subgraph_centrality.m`  | Compute subgraph centrality             | Adjacency (`CIJ`)     | Centrality vector (`Cs`) |
+| `generate_fc.m`          | Generate synthetic FC matrices          | SC matrix, predictors | Predicted FC matrix       |
+| `get_components.m`       | Identify connected components           | Binary matrix (`adj`) | Components and sizes      |
+
 
 ---
 
