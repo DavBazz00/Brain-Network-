@@ -28,113 +28,65 @@ These files store the core data used for analysis and simulations:
   - Includes `Coord`, a matrix of 3D spatial coordinates for nodes.
 
 ---
+## Predefined Functions from the Brain Connectivity Toolbox
 
-### **Brain Connectivity Toolbox Scripts** (Original Files)
-These files are part of the BCT and provide the foundational functions for our analysis:
+The Brain Connectivity Toolbox (BCT) offers a wide array of predefined functions to analyze brain networks. Below is an overview of some important functions used in this project. Each description starts with a formal explanation, followed by a simplified, informal explanation.
 
-### **Important Predefined Functions**
+---
 
-The Brain Connectivity Toolbox provides a variety of powerful functions for analyzing brain networks. Below are some important predefined functions and their roles:
-
-#### **1. Community and Clustering Analysis**
+### **1. Community and Clustering Analysis**
 - **`agreement.m`**:
-  - **Purpose**: Computes an agreement matrix from multiple partitions, showing how often pairs of nodes are assigned to the same community.
-  - **Usage**:
-    ```matlab
-    D = agreement(Ci);
-    ```
-    - `Ci`: A matrix where each column represents a community partition.
-    - `D`: The resulting agreement matrix.
+  - This function calculates the agreement matrix from multiple community partitions. The agreement matrix indicates how frequently pairs of nodes are assigned to the same community across different partitions.
+  - It counts how often two nodes belong to the same group when we run community detection multiple times.
 
 - **`clique_communities.m`**:
-  - **Purpose**: Detects overlapping community structures in a binary undirected network using the clique percolation method.
-  - **Usage**:
-    ```matlab
-    M = clique_communities(A, cq_thr);
-    ```
-    - `A`: Binary adjacency matrix.
-    - `cq_thr`: Clique size threshold.
+  - Detects overlapping communities in binary undirected networks using the clique percolation method. It finds groups of nodes that form tightly connected subgraphs (cliques).
+  - This function finds small, super-tight groups of nodes that overlap, like cliques at a party.
 
 - **`link_communities.m`**:
-  - **Purpose**: Identifies overlapping communities using hierarchical clustering of network links.
-  - **Usage**:
-    ```matlab
-    M = link_communities(W, 'complete');
-    ```
-    - `W`: Directed (binary or weighted) connection matrix.
-    - `'complete'`: Optional clustering type (default is `'single'`).
+  - Identifies overlapping communities by clustering links (edges) instead of nodes. It is generalized for directed and weighted networks.
+  - Instead of grouping people (nodes), this function groups relationships (edges) between them.
 
 ---
 
-#### **2. Network Backbone and Synthetic Networks**
+### **2. Network Backbone and Synthetic Networks**
 - **`backbone_wu.m`**:
-  - **Purpose**: Extracts the backbone of a weighted undirected network using a minimum-spanning-tree algorithm.
-  - **Usage**:
-    ```matlab
-    [CIJtree, CIJclus] = backbone_wu(CIJ, avgdeg);
-    ```
-    - `CIJ`: Weighted undirected connection matrix.
-    - `avgdeg`: Desired average degree of the backbone.
+  - Extracts the backbone of a weighted undirected network using a minimum-spanning-tree algorithm. This reduces the network to its most important connections while preserving its structure.
+  - It trims the network down to just the essential connections, making it easier to see the big picture.
 
 - **`evaluate_generative_model.m`**:
-  - **Purpose**: Generates synthetic networks and evaluates their energy functions using specified generative rules.
-  - **Usage**:
-    ```matlab
-    [B, E, K] = evaluate_generative_model(A, Atgt, D, 'sptl', 'powerlaw', params);
-    ```
-    - `A`: Binary seed connections.
-    - `D`: Euclidean distance matrix.
-    - `'sptl'`: Generative model type (e.g., spatial model).
-    - `'powerlaw'`: Generative model variant.
-    - `params`: Model parameters.
+  - Generates synthetic networks and evaluates their energy function using specified generative rules, such as spatial models or clustering-based models.
+  - This function builds fake networks based on rules we choose and tells us how "good" they are compared to the real network.
 
 - **`generative_model.m`**:
-  - **Purpose**: Runs generative model simulations to create synthetic networks.
-  - **Usage**:
-    ```matlab
-    B = generative_model(A, D, m, 'neighbors', {'powerlaw'}, params);
-    ```
+  - Runs simulations to create synthetic networks using different generative models, such as spatial proximity or node similarity.
+  - It builds fake networks based on specific recipes, like connecting nearby nodes or similar ones.
 
 ---
 
-#### **3. Centrality Measures**
+### **3. Centrality Measures**
 - **`pagerank_centrality.m`**:
-  - **Purpose**: Computes the PageRank centrality, a variant of eigenvector centrality, to rank nodes in the network.
-  - **Usage**:
-    ```matlab
-    r = pagerank_centrality(A, 0.85, falff);
-    ```
-    - `A`: Adjacency matrix.
-    - `0.85`: Damping factor (typical value).
-    - `falff`: Initial PageRank probabilities.
+  - Calculates the PageRank centrality, which measures a node's influence based on how often it is visited in a random walk with restarts.
+  - Think of this as how popular a node is, like Google's PageRank algorithm for websites.
 
 - **`subgraph_centrality.m`**:
-  - **Purpose**: Calculates the subgraph centrality, a measure of the weighted sum of closed walks for each node.
-  - **Usage**:
-    ```matlab
-    Cs = subgraph_centrality(CIJ);
-    ```
+  - Computes the subgraph centrality for each node, which is a weighted sum of closed walks of various lengths starting and ending at that node.
+  - It tells us how well-connected a node is to itself through loops.
 
 ---
 
-#### **4. Functional and Structural Network Analysis**
+### **4. Functional and Structural Network Analysis**
 - **`generate_fc.m`**:
-  - **Purpose**: Generates synthetic functional connectivity (FC) matrices using structural connectivity (SC) as predictors.
-  - **Usage**:
-    ```matlab
-    [FCpre, pred_data, Fcorr] = generate_fc(SC, beta, ED, {'SPLwei_log', 'SIwei_log'}, FC);
-    ```
-    - `SC`: Structural connectivity matrix.
-    - `beta`: Regression coefficients.
-    - `ED`: Euclidean distance matrix (optional).
+  - Creates synthetic functional connectivity matrices based on structural connectivity data and network measures like shortest paths or search information.
+  - It predicts how nodes communicate based on their physical connections.
 
 - **`get_components.m`**:
-  - **Purpose**: Identifies connected components of a binary undirected network.
-  - **Usage**:
-    ```matlab
-    [comps, comp_sizes] = get_components(adj);
-    ```
-    - `adj`: Binary undirected adjacency matrix.
+  - Identifies connected components in an undirected graph. Each component consists of nodes that are directly or indirectly connected.
+  - It groups isolated islands of nodes in the network.
+
+---
+
+These functions form the backbone of many analyses in this project. For detailed usage, refer to the respective `.m` files in the Brain Connectivity Toolbox.
 
 ---
 
