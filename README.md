@@ -1,6 +1,6 @@
 # Brain Network Project
 
-This repository include a project for the exam in Biomedicine at the Politecnico di Torino. 
+This repository include an ongoing project for the exam in Biomedicine at the Politecnico di Torino. 
 
 This is a collaborative project to study and simulate dynamics on brain networks using the **Brain Connectivity Toolbox (BCT)** and custom implementations. Our goal is to analyze network properties, simulate dynamics (e.g., Susceptible-Infected models), and visualize 3D brain networks based on coactivation data.
 
