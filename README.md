@@ -54,7 +54,7 @@ The Brain Connectivity Toolbox (BCT) offers a wide array of predefined functions
   - It takes:
     -  *adjacency matrix AIJ*
     -  *node spatial coordinates COOR*
-    generates three vectors that can be used for quickly plotting the edges
+  - It generates three vectors that can be used for quickly plotting the edges
 
 - **`threshold_absolute`**:
   -  This function thresholds the connectivity matrix by absolute weight magnitude;
