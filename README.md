@@ -12,7 +12,6 @@ This is a collaborative project to study and simulate dynamics on brain networks
 3. [Important Files](#important-files)
     - [Data Files](#data-files-in-data_and_demos)
     - [Predefined Functions from the Brain Connectivity Toolbox](#predefined-functions-from-the-brain-connectivity-toolbox)
-    - [Quick Reference](#quick-reference)
     - [Custom Scripts (Created by Us)](#custom-scripts-created-by-us)
 4. [How to Run](#how-to-run)
 
@@ -50,64 +49,26 @@ These files store the core data used for analysis and simulations:
 
 The Brain Connectivity Toolbox (BCT) offers a wide array of predefined functions to analyze brain networks. Below is an overview of some important functions used in this project. Each description starts with a formal explanation, followed by a simplified, informal explanation.
 
-#### 1. Community and Clustering Analysis
-- **`agreement.m`**: 
-    - This function calculates the agreement matrix from multiple community partitions. The agreement matrix indicates how frequently pairs of nodes are assigned to the same community across different partitions.
-  - It counts how often two nodes belong to the same group when we run community detection multiple times.
+#### 1. Visualization in 3-D and Preprocess
+- **`adjacency_plot_und`**:
+  - It takes:
+    -  *adjacency matrix AIJ*
+    -  *node spatial coordinates COOR*
+    generates three vectors that can be used for quickly plotting the edges
 
-- **`clique_communities.m`**:
-  - It detects overlapping communities in binary undirected networks using the clique percolation method. It finds groups of nodes that form tightly connected subgraphs (cliques).
-  - This function finds small, super-tight groups of nodes that overlap, like cliques at a party.
+- **`threshold_absolute`**:
+  -  This function thresholds the connectivity matrix by absolute weight magnitude;
+  -  All weights below the given threshold are set to 0.
 
-- **`link_communities.m`**:
-  - It identifies overlapping communities by clustering links (edges) instead of nodes. It is generalized for directed and weighted networks.
-  - Instead of grouping people (nodes), this function groups relationships (edges) between them.
-
-
-#### 2. Network Backbone and Synthetic Networks
-- **`backbone_wu.m`**:
-  - It extracts the backbone of a weighted undirected network using a minimum-spanning-tree algorithm. This reduces the network to its most important connections while preserving its structure.
-  - It trims the network down to just the essential connections, making it easier to see the big picture.
-
-- **`evaluate_generative_model.m`**:
-  - It generates synthetic networks and evaluates their energy function using specified generative rules, such as spatial models or clustering-based models.
-  - This function builds fake networks based on rules we choose and tells us how "good" they are compared to the real network.
-
-- **`generative_model.m`**: 
-  - It runs simulations to create synthetic networks using different generative models, such as spatial proximity or node similarity.
-  - It builds fake networks based on specific recipes, like connecting nearby nodes or similar ones.
+- **`threshold_proportional`**:
+  - This function "thresholds" the connectivity matrix by preserving a proportion p (0<p<1) of the strongest;
+  - All other weights are set to 0.
 
 
-#### 3. Centrality Measures
-- **`pagerank_centrality.m`**: 
-  - It calculates the PageRank centrality, which measures a node's influence based on how often it is visited in a random walk with restarts.
-  - Let's think of this as how popular a node is, like Google's PageRank algorithm for websites.
+#### 2. Community and Clustering Analysis
+- **`modularity_und`**:
+  -  It makes a subdivision of the network into nonoverlapping groups of nodes
 
-- **`subgraph_centrality.m`**: 
-  - It computes the subgraph centrality for each node, which is a weighted sum of closed walks of various lengths starting and ending at that node.
-  - It tells us how well-connected a node is to itself through loops.
-
-#### 4. Functional and Structural Network Analysis
-- **`generate_fc.m`**: 
-  - It creates synthetic functional connectivity matrices based on structural connectivity data and network measures like shortest paths or search information.
-  - It predicts how nodes communicate based on their physical connections.
-
-- **`get_components.m`**: 
-  - It identifies connected components in an undirected graph. Each component consists of nodes that are directly or indirectly connected.
-  - It groups isolated islands of nodes in the network.
-
----
-
-### Quick Reference
-| **Function**             | **Purpose**                             | **Key Input**         | **Key Output**            |
-|---------------------------|-----------------------------------------|-----------------------|---------------------------|
-| `agreement.m`            | Compute agreement matrix               | Partitions (`Ci`)     | Agreement matrix (`D`)   |
-| `clique_communities.m`   | Detect overlapping communities          | Binary adjacency (`A`)| Community affiliation (`M`) |
-| `backbone_wu.m`          | Extract network backbone                | Weighted matrix (`CIJ`)| Backbone matrices         |
-| `pagerank_centrality.m`  | Compute PageRank centrality             | Adjacency (`A`)       | PageRank vector (`r`)    |
-| `subgraph_centrality.m`  | Compute subgraph centrality             | Adjacency (`CIJ`)     | Centrality vector (`Cs`) |
-| `generate_fc.m`          | Generate synthetic FC matrices          | SC matrix, predictors | Predicted FC matrix       |
-| `get_components.m`       | Identify connected components           | Binary matrix (`adj`) | Components and sizes      |
 
 ---
 
@@ -116,20 +77,20 @@ These scripts were developed by the team to extend and apply BCT functionality. 
 - **`Dynamic_Brain.m`**:
   - Simulates dynamic processes (e.g., infection spread) on the brain network.
   - Visualizes the network evolution in 3D over multiple time steps.
-  - Implements Susceptible-Infected (SI) dynamics with probabilistic transitions.
+  - Implements all the other scripts of the files below.
 
 - **`Brain_Map.m`**:
   - Visualizes the brain network in 3D, highlighting specific nodes (e.g., initial states).
   - Useful for understanding the structure and initial setup of the network.
 
+- **`Cluster_modularities.m`**:
+   - Groups nodes in communities.
+   - Uses an implemented function in the *Brain Connectivity Toolbox* such as the `modularity_und` function.
+     
 - **`Visualization_Brain.m`**:
   - Visualizes the connectivity matrix using the `imagesc` command. This command shows the connectivity matrix as a grid.
   - The strongest connections are assigned warm colors while non-existent or weak connections are assigned cooler colors.
  
-- **`Community.m`**:
-   - Groups nodes in communities.
-   - Uses an implemented function in the *Brain Connectivity Toolbox* such as the `community_louvain` function.
-   - The final community assignments for each node are made after averaging over multiple runs since the `community_louvain` function is stochastic.
 
 ---
 
