@@ -11,7 +11,6 @@ This is a collaborative project to study and simulate dynamics on brain networks
 2. [Key Features](#key-features)
 3. [Predefined Functions from the Brain Connectivity Toolbox (BCT)](#predefined-functions-from-the-brain-connectivity-toolbox)
 4. [Custom Scripts (Created by Us)](#custom-scripts-created-by-us)
-5. [How to Run](#how-to-run)
 
 ---
 
