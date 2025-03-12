@@ -6,8 +6,8 @@
 clear; close all; clc;
 
 %% 1.Load Data
-L = load('/home/davbaz/MATLAB/Custom_Scripts/Laplacian.csv');                   % Laplacian
-CoordTable = readtable('/home/davbaz/MATLAB/Custom_Scripts/Coordinates.csv');   % Coordinates
+L = load('/Users/Speranza/Desktop/VSCODE/matlab/biomedicina/Brain-Network--main/Laplacian.csv'); % Laplacian
+CoordTable = readtable('/Users/Speranza/Desktop/VSCODE/matlab/biomedicina/Brain-Network--main/Coordinates.csv');   % Coordinates
 
 % Extract numeric coordinates
 Coord = table2array(CoordTable(:, 4:6));  % X, Y, Z are in columns 4, 5, 6
@@ -93,15 +93,15 @@ c_sol(1, :) = c0;
 disp('Starting implicit time integration...');
 try
     for i = 2:length(t_sol)
-    t = t_sol(i);
-    temp = c_sol(i-1, :)';              % Convert to column vector
-    temp = temp + dt * f(t, temp);        % Compute update
-    c_sol(i, :) = temp';                  % Convert back to row vector if needed
-end
+        t = t_sol(i);
+        temp = c_sol(i-1, :)';              % Convert to column vector
+        temp = temp + dt * f(t, temp);        % Compute update
+        c_sol(i, :) = temp';                  % Convert back to row vector if needed
+    end
 
     disp('Implicit time integration completed successfully.');
 catch ME
-    rethrow(ME)
+    rethrow(ME);
 end
 
 %% 5. Plot Infection Dynamics
@@ -134,7 +134,6 @@ clim(common_clims);
 % Single colorbar for both subplots
 hcb = colorbar('Position', [0.92 0.15 0.02 0.7]);
 ylabel(hcb, 'Infection Concentration');
-
 
 %% 6. Plot Average Infection Concentration Over Time
 
@@ -258,4 +257,43 @@ end
 close(v);
 disp(['Video saved as ', videoFilename]);
 
+%%9. selezione nodi in base alla centralità nella matrice L
+%vogliamo per ogni sottomatrice definita in base alla tipologia di nodo, come ad esempio frontale, occipatle, etc i primi 10 nodi più centrali
+%per fare ciò dobbiamo calcolare la centralità di ogni nodo e poi selezionare i primi 10 nodi più centrali
+% Calculate node centrality using eigenvector centrality
+centrality_scores = eigenvector_centrality_und(A);
+
+% Initialize a cell array to store the top 10 central nodes for each region
+top_central_nodes = cell(num_groups, 1);
+
+% Loop through each region group to find the top 10 central nodes
+for r = 1:num_groups
+    % Get the list of labels for this group
+    group = region_groups{r};
+    
+    % Create a mask: true for nodes whose label in CoordTable{:,3} matches any label in the group.
+    nodes_in_region = ismember(lower(CoordTable{:,3}), lower(group));
+    
+    % If any nodes are found in the group, compute the centrality for those nodes
+    if any(nodes_in_region)
+        % Extract centrality scores for nodes in the region
+        region_centrality_scores = centrality_scores(nodes_in_region);
+        
+        % Get the indices of the top 10 central nodes in the region
+        [~, sorted_indices] = sort(region_centrality_scores, 'descend');
+        top_indices = sorted_indices(1:min(10, length(sorted_indices)));
+        
+        % Store the indices of the top central nodes
+        top_central_nodes{r} = find(nodes_in_region);
+        top_central_nodes{r} = top_central_nodes{r}(top_indices);
+    else
+        top_central_nodes{r} = [];  % If no nodes found, store an empty array
+    end
+end
+
+% Display the top 10 central nodes for each region
+for r = 1:num_groups
+    fprintf('Top central nodes for %s region:\n', region_names{r});
+    disp(top_central_nodes{r}');
+end
 
