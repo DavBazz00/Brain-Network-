@@ -34,17 +34,6 @@ We also suggest giving a quick read at this [repository](https://github.com/brai
 3. **Custom Implementations**: Expand the BCT with tailored scripts for visualization and dynamics.
 
 ---
-
-## Important Files
-
-### Data Files (in `data_and_demos/`)
-These files store the core data used for analysis and simulations:
-- **`Coactivation_matrix.mat`**:
-  - Contains the adjacency matrix representing coactivation between brain regions.
-  - Includes `Coord`, a matrix of 3D spatial coordinates for nodes.
-
----
-
 ### Predefined Functions from the Brain Connectivity Toolbox
 
 The Brain Connectivity Toolbox (BCT) offers a wide array of predefined functions to analyze brain networks. Below is an overview of some important functions used in this project. Each description starts with a formal explanation, followed by a simplified, informal explanation.
@@ -60,37 +49,14 @@ The Brain Connectivity Toolbox (BCT) offers a wide array of predefined functions
   -  This function thresholds the connectivity matrix by absolute weight magnitude;
   -  All weights below the given threshold are set to 0.
 
-- **`threshold_proportional`**:
-  - This function "thresholds" the connectivity matrix by preserving a proportion p (0<p<1) of the strongest;
-  - All other weights are set to 0.
-
-
-#### 2. Community and Clustering Analysis
-- **`modularity_und`**:
-  -  It makes a subdivision of the network into nonoverlapping groups of nodes
-
-
 ---
 
 ### Custom Scripts (Created by Us)
 These scripts were developed by the team to extend and apply BCT functionality. **These are the files to modify and implement as needed:**
-- **`Dynamic_Brain.m`**:
+- **`Project.m`**:
   - Simulates dynamic processes (e.g., infection spread) on the brain network.
   - Visualizes the network evolution in 3D over multiple time steps.
   - Implements all the other scripts of the files below.
-
-- **`Brain_Map.m`**:
-  - Visualizes the brain network in 3D, highlighting specific nodes (e.g., initial states).
-  - Useful for understanding the structure and initial setup of the network.
-
-- **`Cluster_modularities.m`**:
-   - Groups nodes in communities.
-   - Uses an implemented function in the *Brain Connectivity Toolbox* such as the `modularity_und` function.
-     
-- **`Visualization_Brain.m`**:
-  - Visualizes the connectivity matrix using the `imagesc` command. This command shows the connectivity matrix as a grid.
-  - The strongest connections are assigned warm colors while non-existent or weak connections are assigned cooler colors.
- 
 
 ---
 
@@ -98,6 +64,6 @@ These scripts were developed by the team to extend and apply BCT functionality. 
 
 ### Prerequisites
 - MATLAB installed on your system.
-- Ensure the `data_and_demos` folder and BCT toolbox are included in MATLAB’s path:
+- Ensure the BCT toolbox is included in MATLAB’s path:
   ```matlab
   addpath(genpath('/path/to/BCT/2019_03_03_BCT'));
