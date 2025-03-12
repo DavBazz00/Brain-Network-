@@ -65,31 +65,40 @@ c0 = zeros(N, 1);
 
 % Identify and seed ONLY the selected brain regions
 infected_mask = strcmp(CoordTable{:, 3}, 'entorhinal') | ...
-                strcmp(CoordTable{:, 3}, 'temporalpole'); %as said in the paper
+                strcmp(CoordTable{:, 3}, 'temporalpole'); % as said in the paper
 
 % Assign initial concentration (0.1) to all selected nodes
 c0(infected_mask) = 0.1;
 %%%%%%%%%%%%%%%%% END initial conditions %%%%%%%%%%%%%%%%%%%
 
-
 % Model parameters
 a = 0.5;        % Logistic growth rate parameter (adjust as needed)
-tmax = 20;      % Max simulation time 
+dt = 0.4;       % Time step size in years
+num_steps = 100; % Number of time steps
+tmax = dt * num_steps; % Total simulation time
 
 % Define the ODE Function (Reaction-Diffusion Model)
 % dc/dt = - L*c + a*c.*(1 - c)
-%f = @(t, c) max((-1)* L * c, 0)  + a * c .* (1 - c); 
-f = @(t, c) -L*c* (0.05)+ a*c.*(1-c);
+f = @(t, c) -L*c*0.05 + a*c.*(1-c);
 
 %% 4. Simulate Infection Propagation
 
-% Solve the ODE using ode15s
-disp('Starting ODE solver...');
+% Time vector for implicit time integration
+t_sol = linspace(0, tmax, num_steps + 1);
+
+% Preallocate solution matrix
+c_sol = zeros(length(t_sol), N);
+c_sol(1, :) = c0;
+
+disp('Starting implicit time integration...');
 try
-    [t_sol, c_sol] = ode15s(f, [0 tmax], c0);
-    disp('ODE solver completed successfully.');
+    for i = 2:length(t_sol)
+        t = t_sol(i);
+        c_sol(i, :) = c_sol(i-1, :) + dt * f(t, c_sol(i-1, :));
+    end
+    disp('Implicit time integration completed successfully.');
 catch ME
-    disp('Error during ODE solving:');
+    disp('Error during implicit time integration:');
     disp(ME.message);
 end
 
