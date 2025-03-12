@@ -254,9 +254,10 @@ end
 close(v);
 disp(['Video saved as ', videoFilename]);
 
-%%9. selezione nodi in base alla centralità nella matrice L
-%vogliamo per ogni sottomatrice definita in base alla tipologia di nodo, come ad esempio frontale, occipatle, etc i primi 10 nodi più centrali
-%per fare ciò dobbiamo calcolare la centralità di ogni nodo e poi selezionare i primi 10 nodi più centrali
+%% 9. selezione nodi in base alla centralità nella matrice L
+% vogliamo per ogni sottomatrice definita in base alla tipologia di nodo, come ad esempio frontale, occipitale, etc i primi 10 nodi più centrali
+% per fare ciò dobbiamo calcolare la centralità di ogni nodo e poi selezionare i primi 10 nodi più centrali
+
 % Calculate node centrality using eigenvector centrality
 centrality_scores = eigenvector_centrality_und(A);
 
@@ -281,8 +282,8 @@ for r = 1:num_groups
         top_indices = sorted_indices(1:min(10, length(sorted_indices)));
         
         % Store the indices of the top central nodes
-        top_central_nodes{r} = find(nodes_in_region);
-        top_central_nodes{r} = top_central_nodes{r}(top_indices);
+        region_node_indices = find(nodes_in_region);
+        top_central_nodes{r} = region_node_indices(top_indices);
     else
         top_central_nodes{r} = [];  % If no nodes found, store an empty array
     end
@@ -293,4 +294,3 @@ for r = 1:num_groups
     fprintf('Top central nodes for %s region:\n', region_names{r});
     disp(top_central_nodes{r}');
 end
-
