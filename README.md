@@ -9,7 +9,7 @@ This is a collaborative project to study and simulate dynamics on brain networks
 ## Table of Contents
 1. [Overview](#overview)
 2. [Key Features](#key-features)
-3. [Predefined Functions from the Brain Connectivity Toolbox](#predefined-functions-from-the-brain-connectivity-toolbox)
+3. [Predefined Functions from the Brain Connectivity Toolbox (BCT)](#predefined-functions-from-the-brain-connectivity-toolbox)
 4. [Custom Scripts (Created by Us)](#custom-scripts-created-by-us)
 5. [How to Run](#how-to-run)
 
@@ -29,10 +29,9 @@ We also suggest giving a quick read at this [repository](https://github.com/brai
 ## Key Features
 1. **3D Visualization**: Visualize brain networks in 3D using spatial coordinates of nodes.
 2. **Dynamic Simulations**: Simulate processes like signal propagation and infection spread using graph-based models.
-3. **Custom Implementations**: Expand the BCT with tailored scripts for visualization and dynamics.
 
 ---
-### Predefined Functions from the Brain Connectivity Toolbox
+### Predefined Functions from the Brain Connectivity Toolbox (BCT)
 
 The Brain Connectivity Toolbox (BCT) offers a wide array of predefined functions to analyze brain networks. Below is an overview of some important functions used in this project. Each description starts with a formal explanation, followed by a simplified, informal explanation.
 
@@ -56,12 +55,4 @@ These scripts were developed by the team to extend and apply BCT functionality. 
   - Visualizes the network evolution in 3D over multiple time steps.
   - Implements all the other scripts of the files below.
 
----
 
-## How to Run
-
-### Prerequisites
-- MATLAB installed on your system.
-- Ensure the BCT toolbox is included in MATLAB’s path:
-  ```matlab
-  addpath(genpath('/path/to/BCT/2019_03_03_BCT'));
