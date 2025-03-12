@@ -93,14 +93,14 @@ c_sol(1, :) = c0;
 disp('Starting implicit time integration...');
 try
     for i = 2:length(t_sol)
-        t = t_sol(i);
-        c_sol(i, :) = c_sol(i-1, :) + dt * f(t, c_sol(i-1, :));
-    end
+    t = t_sol(i);
+    temp = c_sol(i-1, :)';              % Convert to column vector
+    temp = temp + dt * f(t, temp);        % Compute update
+    c_sol(i, :) = temp';                  % Convert back to row vector if needed
+end
+
     disp('Implicit time integration completed successfully.');
 catch ME
-    disp('Error during implicit time integration:');
-    disp(ME.message);
-end
 
 %% 5. Plot Infection Dynamics
 
