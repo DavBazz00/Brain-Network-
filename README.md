@@ -9,11 +9,9 @@ This is a collaborative project to study and simulate dynamics on brain networks
 ## Table of Contents
 1. [Overview](#overview)
 2. [Key Features](#key-features)
-3. [Important Files](#important-files)
-    - [Data Files](#data-files-in-data_and_demos)
-    - [Predefined Functions from the Brain Connectivity Toolbox](#predefined-functions-from-the-brain-connectivity-toolbox)
-    - [Custom Scripts (Created by Us)](#custom-scripts-created-by-us)
-4. [How to Run](#how-to-run)
+3. [Predefined Functions from the Brain Connectivity Toolbox](#predefined-functions-from-the-brain-connectivity-toolbox)
+4. [Custom Scripts (Created by Us)](#custom-scripts-created-by-us)
+5. [How to Run](#how-to-run)
 
 ---
 
