@@ -101,6 +101,8 @@ end
 
     disp('Implicit time integration completed successfully.');
 catch ME
+    rethrow(ME)
+end
 
 %% 5. Plot Infection Dynamics
 
