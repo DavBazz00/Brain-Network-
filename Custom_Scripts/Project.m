@@ -181,10 +181,7 @@ for r = 1:num_groups
     % Using lower-case conversion for robustness.
     nodes_in_region = ismember(lower(CoordTable{:,3}), lower(group));
     
-    % For the Frontal group, restrict further to only left nodes (from CoordTable{:,2})
-    if strcmpi(region_names{r}, 'Frontal')
-        nodes_in_region = nodes_in_region & strcmpi(CoordTable{:,2}, 'left');
-    end
+    % Remove restriction to only left nodes for the Frontal group
     
     % If any nodes are found in the group, compute the mean over those nodes at each time point
     if any(nodes_in_region)
