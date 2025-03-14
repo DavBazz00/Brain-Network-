@@ -309,5 +309,5 @@ end
 % Visualizzare i nodi più centrali per ciascuna regione
 for r = 1:num_groups
     fprintf('Top 10 central nodes in %s region:\n', region_names{r});
-    disp(CoordTable(top_central_nodes.(region_names{r}), :));
+    disp(CoordTable(top_central_nodes.(region_names{r}), [1 3 7]));
 end
