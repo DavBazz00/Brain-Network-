@@ -4,10 +4,11 @@
 % for network analysis and visualization.
 
 clear; close all; clc;
+addpath('/Users/Speranza/Desktop/VSCODE/matlab/biomedicina/matlab/Custom_Scripts');
 
-%% 1.Load Data
-L = load('/Users/Speranza/Desktop/VSCODE/matlab/biomedicina/Brain-Network--main/Laplacian.csv'); % Laplacian
-CoordTable = readtable('/Users/Speranza/Desktop/VSCODE/matlab/biomedicina/Brain-Network--main/Coordinates.csv');   % Coordinates
+%% 1. Load Data
+L = load('/Users/Speranza/Desktop/VSCODE/matlab/biomedicina/matlab/Laplacian.csv'); % Laplacian
+CoordTable = readtable('//Users/Speranza/Desktop/VSCODE/matlab/biomedicina/matlab/Coordinates.csv');   % Coordinates
 
 % Extract numeric coordinates
 Coord = table2array(CoordTable(:, 4:6));  % X, Y, Z are in columns 4, 5, 6
@@ -23,12 +24,27 @@ A_tresh = threshold_absolute(A, 0.1);
 figure;
 
 % ====================== Parameters to Adjust ======================
-edgeLineWidth = 0.1;     % Reduce for thinner edges (original was 0.5)
+edgeLineWidth = 0.5;     % Reduce for thinner edges (original was 0.5)
 nodeSize = 100;           % Increase for greater node size (original was 50)
 % ===================================================================
 
 % Plot edges first
-[X, Y, Z] = adjacency_plot_und(A_tresh, Coord);
+% Define the adjacency_plot_und function if not available
+if ~exist('adjacency_plot_und1', 'file')
+    % Function not available
+    warning('Function adjacency_plot_und not found.');
+end
+
+
+%function [X, Y, Z] = adjacency_plot_und(A, Coord)
+%    [i, j] = find(A);
+%    X = [Coord(i, 1) Coord(j, 1)]';
+%    Y = [Coord(i, 2) Coord(j, 2)]';
+%    Z = [Coord(i, 3) Coord(j, 3)]';
+%end
+
+
+[X, Y, Z] = adjacency_plot_und1(A_tresh, Coord);
 plot3(X, Y, Z, 'y-', 'LineWidth', edgeLineWidth); 
 hold on;
 
@@ -152,10 +168,14 @@ hold off;
 %% 7. Compute Average Infection Concentration for Selected Brain Regions Over Time
 
 % Define custom groups for each region based on labels in CoordTable{:,3}
-group_temporal = {'inferiortemporal', 'middletemporal', 'Right-Hippocampus', 'Left-Hippocampus'};
-group_frontal  = {'precentral', 'caudalmiddlefrontal'};
-group_parietal = {'superiorparietal', 'supramarginal', 'precuneus', 'insula'};
-group_occipital = {'lateraloccipital', 'cuneus'};
+% Estrarre le etichette dalla colonna 3 della tabella
+% Eliminate "insula" group because it can be recasted in more then 1 group
+group_temporal = {'inferiortemporal', 'middletemporal', 'Right-Hippocampus', 'Left-Hippocampus','fusiform','temporalpole','superiortemporal','transversetemporal','bankssts'};
+group_frontal  = {'precentral', 'caudalmiddlefrontal','lateralorbitofrontal', 'rostralmiddlefrontal', 'superiorfrontal', 'parsopercularis', 'parstriangularis', 'parsorbitalis', 'rostralanteriorcingulate', 'caudalanteriorcingulate', 'frontalpole','medialorbitofrontal'};
+group_parietal = {'superiorparietal', 'supramarginal', 'precuneus','inferiorparietal','postcentral','paracentral','isthmuscingulate'};
+group_occipital = {'lateraloccipital', 'cuneus', 'pericalcarine', 'lingual'};
+
+%It could be better to choose directly from column 7 of CoordTable (idk)
 
 % Combine the groups into a cell array and define region names
 region_groups = {group_temporal, group_frontal, group_parietal, group_occipital};
@@ -214,7 +234,7 @@ v = VideoWriter(videoFilename);
 v.FrameRate = 5;  % Adjust frame rate as desired
 open(v);
 
-figure('Color','w'); % Create a new figure with white background
+figure('Color','w', 'Position', [100, 100, 1120, 840]); % Create a new figure with white background and specified size
 
 % Loop over each time step in the simulation
 for i = 1:length(t_sol)
@@ -258,39 +278,36 @@ disp(['Video saved as ', videoFilename]);
 % vogliamo per ogni sottomatrice definita in base alla tipologia di nodo, come ad esempio frontale, occipitale, etc i primi 10 nodi più centrali
 % per fare ciò dobbiamo calcolare la centralità di ogni nodo e poi selezionare i primi 10 nodi più centrali
 
-% Calculate node centrality using eigenvector centrality
-centrality_scores = eigenvector_centrality_und(A);
+% Calcolare la centralità di grado per tutti i nodi
+degree_centrality = sum(A, 2);
 
-% Initialize a cell array to store the top 10 central nodes for each region
-top_central_nodes = cell(num_groups, 1);
+% Inizializzare una struttura per memorizzare i nodi più centrali per ciascuna regione
+top_central_nodes = struct();
 
-% Loop through each region group to find the top 10 central nodes
+% Iterare su ciascun gruppo di regioni
 for r = 1:num_groups
-    % Get the list of labels for this group
+    % Ottenere l'elenco delle etichette per questo gruppo
     group = region_groups{r};
     
-    % Create a mask: true for nodes whose label in CoordTable{:,3} matches any label in the group.
+    % Creare una maschera: true per i nodi la cui etichetta in CoordTable{:,3} corrisponde a qualsiasi etichetta nel gruppo
     nodes_in_region = ismember(lower(CoordTable{:,3}), lower(group));
     
-    % If any nodes are found in the group, compute the centrality for those nodes
-    if any(nodes_in_region)
-        % Extract centrality scores for nodes in the region
-        region_centrality_scores = centrality_scores(nodes_in_region);
-        
-        % Get the indices of the top 10 central nodes in the region
-        [~, sorted_indices] = sort(region_centrality_scores, 'descend');
-        top_indices = sorted_indices(1:min(10, length(sorted_indices)));
-        
-        % Store the indices of the top central nodes
-        region_node_indices = find(nodes_in_region);
-        top_central_nodes{r} = region_node_indices(top_indices);
-    else
-        top_central_nodes{r} = [];  % If no nodes found, store an empty array
-    end
+    % Estrarre le centralità dei nodi per questa regione
+    centrality_in_region = degree_centrality(nodes_in_region);
+    
+    % Estrarre gli indici dei nodi in questa regione
+    region_indices = find(nodes_in_region);
+    
+    % Ordinare i nodi per centralità in ordine decrescente e selezionare i primi 10
+    [~, sorted_indices] = sort(centrality_in_region, 'descend');
+    top_10_indices = region_indices(sorted_indices(1:min(10, length(sorted_indices))));
+    
+    % Memorizzare i nodi più centrali per questa regione
+    top_central_nodes.(region_names{r}) = top_10_indices;
 end
 
-% Display the top 10 central nodes for each region
+% Visualizzare i nodi più centrali per ciascuna regione
 for r = 1:num_groups
-    fprintf('Top central nodes for %s region:\n', region_names{r});
-    disp(top_central_nodes{r}');
+    fprintf('Top 10 central nodes in %s region:\n', region_names{r});
+    disp(CoordTable(top_central_nodes.(region_names{r}), :));
 end
