@@ -21,56 +21,89 @@ A(A < 0) = 0;
 A_tresh = threshold_absolute(A, 0.1);
 
 %% 2. 3D Brain Map
-figure;
+figure('Color','w','Position',[100, 100, 1000, 800]);
 
-% ====================== Parameters to Adjust ======================
-edgeLineWidth = 0.5;     % Reduce for thinner edges (original was 0.5)
-nodeSize = 100;           % Increase for greater node size (original was 50)
-% ===================================================================
+% ====================== 1) Carica o crea la mesh del cervello ======================
+meshFile = '/Users/Speranza/Desktop/VSCODE/matlab/biomedicina/matlab/brain_mesh.mat';
+if isfile(meshFile)
+    meshData = load(meshFile);  % Dovrebbe contenere "vertices" e "faces"
+    brain_vertices = meshData.vertices;
+    brain_faces = meshData.faces;
+else
+    % Calcola centro e bounding box delle coordinate dei nodi
+    centerCoord = mean(Coord, 1);         % baricentro dei nodi
+    minCoord    = min(Coord, [], 1);
+    maxCoord    = max(Coord, [], 1);
+    boxSize     = maxCoord - minCoord;    % dimensioni bounding box
+    radius      = norm(boxSize) / 2;      % raggio (metà diagonale box)
 
-% Plot edges first
-% Define the adjacency_plot_und function if not available
-if ~exist('adjacency_plot_und1', 'file')
-    % Function not available
-    warning('Function adjacency_plot_und not found.');
+    % Crea una sfera unitaria (Xs, Ys, Zs in [-1,1])
+    [Xs, Ys, Zs] = sphere(30);  % più punti => mesh più densa
+
+    % Scala e trasla la sfera per centrarla
+    Xs = Xs * radius + centerCoord(1);
+    Ys = Ys * radius + centerCoord(2);
+    Zs = Zs * radius + centerCoord(3);
+
+    % Crea vertices e faces
+    brain_vertices = [Xs(:), Ys(:), Zs(:)];
+    brain_faces = convhull(brain_vertices);
 end
 
-
-%function [X, Y, Z] = adjacency_plot_und(A, Coord)
-%    [i, j] = find(A);
-%    X = [Coord(i, 1) Coord(j, 1)]';
-%    Y = [Coord(i, 2) Coord(j, 2)]';
-%    Z = [Coord(i, 3) Coord(j, 3)]';
-%end
-
-
-[X, Y, Z] = adjacency_plot_und1(A_tresh, Coord);
-plot3(X, Y, Z, 'y-', 'LineWidth', edgeLineWidth); 
+% ====================== 2) Plot della superficie cerebrale (semi-trasparente) ======================
+p = patch('Vertices', brain_vertices, ...
+          'Faces', brain_faces, ...
+          'FaceColor', [0.8 0.8 0.8], ...  % Colore grigio chiaro
+          'EdgeColor', 'none', ...
+          'FaceAlpha', 0.3);              % Trasparenza (0=trasparente, 1=opaco)
 hold on;
+axis equal; 
+%axis off;                % Se preferisci nascondere gli assi
+view(3);                 % Vista 3D
+camlight headlight;      % Aggiunge luce di scena
+material dull;           % Materiale "opaco"
 
-% Prepare node colors based on brain regions
-brainRegions = unique(CoordTable{:, 7});  % Get unique region names
-colors = lines(length(brainRegions));     % Color palette
+% ====================== Parametri di rete da regolare ======================
+edgeLineWidth = 0.5;    % Spessore delle linee
+nodeSize = 100;         % Dimensione dei nodi
+% ===========================================================================
 
-% Initialize array to store scatter objects for legend
+% ====================== 3) Plot degli spigoli (rete) ======================
+if ~exist('adjacency_plot_und1','file')
+    warning('Funzione adjacency_plot_und1 non trovata: userò un fallback manuale.');
+    [i, j] = find(A_tresh);
+    X = [Coord(i,1), Coord(j,1)]';
+    Y = [Coord(i,2), Coord(j,2)]';
+    Z = [Coord(i,3), Coord(j,3)]';
+else
+    [X, Y, Z] = adjacency_plot_und1(A_tresh, Coord);
+end
+plot3(X, Y, Z, 'y-', 'LineWidth', edgeLineWidth);
+
+% ====================== 4) Plot dei nodi colorati per regione ======================
+brainRegions = unique(CoordTable{:, 7});  % Colonna 7: nome della regione
+colors = lines(length(brainRegions));     % Palette di colori
 hScatter = gobjects(length(brainRegions), 1); 
 
-% Plot nodes with different colors
-for i = 1:length(brainRegions)
-    region = brainRegions{i};
-    isRegion = strcmp(CoordTable{:, 7}, region);
+for r = 1:length(brainRegions)
+    regionName = brainRegions{r};
+    isRegion = strcmp(CoordTable{:, 7}, regionName);
     
-    % Store scatter handle for legend
-    hScatter(i) = scatter3(Coord(isRegion,1), Coord(isRegion,2), Coord(isRegion,3),...
-        nodeSize, colors(i,:), 'filled', 'DisplayName', region);
+    % Plot dei nodi di questa regione con colore dedicato
+    hScatter(r) = scatter3(Coord(isRegion,1), ...
+                          Coord(isRegion,2), ...
+                          Coord(isRegion,3), ...
+                          nodeSize, ...
+                          colors(r,:), ...
+                          'filled', ...
+                          'DisplayName', regionName);
 end
 
-% Finalize plot
-title('3D Brain Network');
+% ====================== 5) Rifiniture del grafico ======================
+title('3D Brain Network with Surface');
 xlabel('X'); ylabel('Y'); zlabel('Z');
-legend(hScatter, 'Location', 'eastoutside'); % Use SCATTER handles for legend
-grid on; 
-axis equal;
+legend(hScatter, 'Location', 'eastoutside'); 
+grid on;
 hold off;
 
 %% 3. Infection Model
