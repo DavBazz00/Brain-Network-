@@ -306,7 +306,68 @@ end
 close(v);
 disp(['Video saved as ', videoFilename]);
 
-%% Modello eterodimero
+%% Heterodimer Infection Model
+
+% Heterodimer kinetic parameters
+k0 = 1.0;       % Production rate of healthy protein
+k1 = 0.5;       % Clearance rate of healthy protein
+ktilde1 = 0.5;  % Clearance rate of misfolded protein
+k12 = 0.5;      % Conversion rate from healthy to misfolded protein
+diffusion_coeff = 0.05;  % Diffusion coefficient
+
+%%%%%%%%%%% Initial Conditions %%%%%%%%%%
+N = size(A, 1);
+% Healthy protein initial concentration: p0 = k0/k1 (stato sano)
+p0 = ones(N, 1) * (k0/k1);
+
+% Misfolded protein initial concentration: zero in tutti i nodi
+pt0 = zeros(N, 1);
+% Seeding: imposta un seme (0.1) nella regione "entorhinal"
+infected_mask = strcmp(CoordTable{:, 3}, 'entorhinal');
+pt0(infected_mask) = 0.1;
+%%%%%%%%%%%%%%%%% END Initial Conditions %%%%%%%%%%%%%%%%%%%
+
+% Preallocate solution matrices
+p_sol = zeros(num_steps + 1, N);    % Healthy protein concentration over time
+pt_sol = zeros(num_steps + 1, N);   % Misfolded protein concentration over time
+p_sol(1, :) = p0';
+pt_sol(1, :) = pt0';
+
+disp('Starting heterodimer model simulation...');
+for i = 2:length(t_sol)
+    % Estrai le concentrazioni dal passo precedente
+    p_old = p_sol(i-1, :)';      % Proteina sana
+    pt_old = pt_sol(i-1, :)';    % Proteina misfoldata
+
+    % Calcola la derivata (combinando diffusione e reazione)
+    dpdt = - diffusion_coeff * L * p_old + k0 - k1 * p_old - k12 * (p_old .* pt_old);
+    dptdt = - diffusion_coeff * L * pt_old - ktilde1 * pt_old + k12 * (p_old .* pt_old);
+    
+    % Aggiornamento esplicito (Forward Euler)
+    p_new = p_old + dt * dpdt;
+    pt_new = pt_old + dt * dptdt;
+    
+    % Salva le nuove concentrazioni
+    p_sol(i, :) = p_new';
+    pt_sol(i, :) = pt_new';
+end
+
+disp('Heterodimer simulation completed successfully.');
+
+% Per confronto, ad esempio, calcola il biomarcatore totale (somma su tutti i nodi)
+biomarker_pt = sum(pt_sol(end, :));
+pt_sol(end,:)
+fprintf('Biomarker (total misfolded protein) at final time: %.3f\n', biomarker_pt);
+
+% Plot della concentrazione media di proteina misfoldata (p̃) nei nodi centrali
+% (si assume che la variabile "central_nodes" sia già stata definita in precedenza)
+avg_pt_central = mean(pt_sol(:, central_nodes), 2);
+figure;
+plot(t_sol, avg_pt_central, 'LineWidth', 2, 'Color', [0, 0.4470, 0.7410]);
+xlabel('Time [years]');
+ylabel('Average Misfolded Protein Concentration (Central Nodes)');
+title('Heterodimer Model: p_{tilde} Evolution in Central Nodes');
+grid on;
 
 %% 9 da qui stoc.
 % Simulazione con variazione dinamica degli archi su A (40 anni)
