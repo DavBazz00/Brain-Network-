@@ -248,7 +248,7 @@ figure('Name', 'Average Infection Concentration for Central Nodes per Brain Regi
 hold on;
 for r = 1:num_groups
     % Nota: region_colors deve essere definito in anticipo; se non lo è, è possibile definirlo qui:
-    % region_colors = [0 1 0; 1 0 0; 1 0.5 0; 0 0 1];
+    region_colors = [0 1 0; 1 0 0; 1 0.5 0; 0 0 1];
     plot(t_sol, avg_conc_desired_central(:, r), 'LineWidth', 2, 'Color', region_colors(r, :));
 end
 hold off;
@@ -305,3 +305,78 @@ end
 
 close(v);
 disp(['Video saved as ', videoFilename]);
+
+%% Modello eterodimero
+
+%% 9 da qui stoc.
+% Simulazione con variazione dinamica degli archi su A (40 anni)
+% Impostazioni iniziali
+L = load('/Users/Speranza/Desktop/VSCODE/matlab/biomedicina/matlab/Laplacian.csv'); % Laplacian
+
+dt = 0.4;             % passo temporale in anni
+num_steps = 100;      % numero di passi (T = 0.4*100 = 40 anni)
+t_sol = linspace(0, dt*num_steps, num_steps+1);
+N = size(A, 1);       % numero di nodi
+c_sol = zeros(num_steps+1, N);
+
+% Condizioni iniziali: ad esempio, se "entorhinal" è la regione di interesse
+c0 = zeros(N, 1);
+infected_mask = strcmp(CoordTable{:, 3}, 'entorhinal');
+c0(infected_mask) = 0.1;
+c_sol(1, :) = c0';
+
+% Parametri del modello
+a = 0.5;                % parametro di crescita logistica
+edge_reduction = 0.8;   % fattore di riduzione degli archi (es. 0.8 riduce del 20%)
+diffusion_coeff = 0.05; % coefficiente di diffusione
+
+for i = 2:length(t_sol)
+    % --- Aggiornamento casuale degli archi su A ---
+    % Estrai gli indici degli archi esistenti (considera solo la parte superiore per simmetria)
+    [edgeI, edgeJ] = find(triu(A, 1));
+    numEdgesTotal = length(edgeI);
+    
+    % Definisci il numero massimo di archi da modificare (ad es. il 10% degli archi esistenti)
+    maxEdgesToModify = ceil(0.15 * numEdgesTotal);
+    % Scegli casualmente un numero (minimo 1) di archi da modificare
+    numEdgesToModify = randi([1, maxEdgesToModify]);
+    numEdgesToModify
+    
+    % Seleziona casualmente gli archi da modificare
+    selectedIndices = randperm(numEdgesTotal, numEdgesToModify);
+    for k = 1:numEdgesToModify
+        idx1 = edgeI(selectedIndices(k));
+        idx2 = edgeJ(selectedIndices(k));
+        % Riduci il peso dell'arco selezionato (ricorda la simmetria)
+        A(idx1, idx2) = A(idx1, idx2) * edge_reduction;
+        A(idx2, idx1) = A(idx2, idx1) * edge_reduction;
+    end
+    
+    % --- Aggiornamento della Laplaciana ---
+    % Calcola la Laplaciana corrente basata su A aggiornato
+    L_current = diag(sum(A, 2)) - A;
+    
+    % --- Aggiornamento del modello Reaction-Diffusion ---
+    % dc/dt = - diffusion_coeff * L_current * c + a * c .* (1 - c)
+    temp = c_sol(i-1, :)';         % vettore colonna della concentrazione al passo precedente
+    diffusion = -diffusion_coeff * L_current * temp;
+    growth = a * temp .* (1 - temp);
+    temp = temp + dt * (diffusion + growth);  % aggiornamento con passo implicito
+    c_sol(i, :) = temp';           % salva la concentrazione al passo corrente
+end
+
+% A questo punto c_sol contiene l'evoluzione temporale della concentrazione 
+% d'infezione per ogni nodo, mentre A è stata modificata ad ogni iterazione.
+
+%% 10. plot della propagazione dell'infezione con variazione dinamica degli archi
+% Plot Average Infection Concentration Over Time (Central Nodes Only)
+% Calcola la concentrazione media dell'infezione considerando solo i nodi centrali
+avg_conc_central = mean(c_sol(:, central_nodes), 2);
+
+figure;
+plot(t_sol, avg_conc_central, 'LineWidth', 2, 'Color', [0, 0.4470, 0.7410]); % Blu default MATLAB
+xlabel('Time');
+ylabel('Average Infection Concentration (Central Nodes)');
+title('Average Infection Concentration Over Time (Central Nodes Only)');
+grid on;
+hold off;
