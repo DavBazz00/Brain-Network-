@@ -30,7 +30,7 @@ We also suggest giving a quick read at this [repository](https://github.com/brai
 2. **Dynamic Simulations**: Simulate processes like signal propagation and infection spread using graph-based models.
 
 ---
-### Predefined Functions from the Brain Connectivity Toolbox (BCT)
+## Predefined Functions from the Brain Connectivity Toolbox (BCT)
 
 The Brain Connectivity Toolbox (BCT) offers a wide array of predefined functions to analyze brain networks. Below is an overview of some important functions used in this project. Each description starts with a formal explanation, followed by a simplified, informal explanation.
 
@@ -54,4 +54,12 @@ These scripts were developed by the team to extend and apply BCT functionality. 
   - Visualizes the network evolution in 3D over multiple time steps.
   - Implements all the other scripts of the files below.
 
+---
+# Alternative Project
+It is a project based upon different data obtained from the [BrainNet toolbox](https://www.nitrc.org/projects/bnv). Specifically we use a Brain Netowrk with 82 nodes.
+
+---
+## BrainNet toolbox
+It is used for getting a great network visualiization with the mesh of the brain as well.
+You can check it a this  [link](https://www.nitrc.org/projects/bnv).
 
