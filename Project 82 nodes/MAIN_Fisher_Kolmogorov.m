@@ -50,3 +50,12 @@ plotMultiAlpha_FK(A, CoordTable, diffusion, dt, num_steps);
 %% 9. Plot average infection with starting point different nodes (FK)
 plotSelectedNodes_FK(A, CoordTable, 5e-4, 0.5, 0.4, 100);
 
+%% 10. Simulate treatment scenario
+t_switch = 5;      % Time at which treatment starts (years)
+dt = 1; num_steps = 30;
+edge_reduction = 0.20;
+[t_baseline, c_baseline, t_treatment, c_treatment] = simulateFKPropagationWithTreatment(A, CoordTable, diffusion, a, dt, num_steps, t_switch, edge_reduction);
+
+plotPropagationWithTreatment(t_baseline, c_baseline, t_treatment, c_treatment, t_switch, 'Baseline vs. Treatment (post-switch) FK Propagation');
+
+
