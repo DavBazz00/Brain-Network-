@@ -47,3 +47,11 @@ plotMultiK12_Heterodimer(A, CoordTable, k0, k1, ktilde1, diffusion_coeff, dt, nu
 
 %% 9. Plot average misfolded infection with starting point different nodes (Heterodimer)
 plotSelectedNodes_Heterodimer(A, CoordTable, 1.0, 0.5, 0.5, 0.5, 5e-4, 0.4, 100);
+
+%% 10. Simulate treatment scenario
+t_switch = 5; edge_reduction = 0;
+[t_baseline, p_baseline, pt_baseline, t_treatment, p_treatment, pt_treatment] = simulateHeterodimerPropagationWithTreatment(...
+    A, CoordTable, k0, k1, ktilde1, k12, diffusion_coeff, dt, num_steps, t_switch, edge_reduction);
+
+plotPropagationWithTreatment(t_baseline, pt_baseline, t_treatment, pt_treatment, t_switch, 'Baseline vs. Treatment (post-switch) Heterodimer Propagation');
+
