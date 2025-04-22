@@ -16,9 +16,7 @@ function [A, CoordTable, Coord] = AdjacencyMatrix(edgeFile, nodeFile)
 %       1. Loads the adjacency matrix from edgeFile and removes the first row.
 %       2. Reads the node coordinate table from nodeFile.
 %       3. Extracts the numeric coordinates (first three columns) from the table.
-%       4. Defines a set of sequences and creates labels for node pairs in the format 'nL' and 'nR'.
-%       5. Updates the coordinate table with the new 'Label' column.
-%
+
 
     % Load the adjacency matrix and remove the first row
     A = load(edgeFile);
@@ -29,28 +27,4 @@ function [A, CoordTable, Coord] = AdjacencyMatrix(edgeFile, nodeFile)
     
     % Extract numeric coordinates (assumed to be in the first three columns)
     Coord = table2array(CoordTable(:, 1:3));
-    
-    % Define the desired sequences
-    seqA = 1:11;      % 1, 2, ..., 11
-    seqB = 17:30;     % 17, 18, ..., 30
-    seqC = 32;        % 32
-    secD = 34:48;
-    
-    % Concatenate all sequences into one vector
-    allNumbers = [seqA, seqB, seqC, secD];  % This gives the desired order
-    
-    % Calculate the number of pairs
-    numPairs = length(allNumbers);
-    
-    % Preallocate cell array for the new labels (each pair has two labels)
-    Labels = cell(numPairs * 2, 1);
-    
-    % Generate labels in the format "nL" and "nR" for each number in allNumbers
-    for i = 1:numPairs
-        Labels{2*i - 1} = sprintf('%dL', allNumbers(i));
-        Labels{2*i}     = sprintf('%dR', allNumbers(i));
-    end
-    
-    % Update the Label column in the table
-    CoordTable.("Label") = Labels;
 end
