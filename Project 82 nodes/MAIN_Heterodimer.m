@@ -8,7 +8,6 @@ nodeFile = '/Users/Speranza/Desktop/VSCODE/matlab/biomedicina/82_nodes/Node.csv'
 
 [A, CoordTable, Coord] = AdjacencyMatrix(edgeFile, nodeFile);
 
-
 %% 2. Infection Propagation
 % Set model parameters for the heterodimer infection model
 k0 = 1.0;       % Production rate of healthy protein
@@ -87,6 +86,43 @@ plotAvgInfectionConcentration( ...
     t_comb_hd, pt_comb_hd, ...
     'Average concentration with Aging + Annual Treatment (Heterodimer)' );
 
+%% 11bis. Media su più realizzazioni per confrontare Aging-only vs Aging+Cure
+Nrep      = 20;
+avg_dyn   = zeros(length(t_sol),1);
+avg_comb  = zeros(length(t_sol),1);
+
+for r = 1:Nrep
+    % usa seed r per riproducibilità
+    rng(r);
+    [~,~,pt_dyn] = HeterodimerInfection_dynamic( ...
+        A, CoordTable, ...
+        k0, k1, ktilde1, k12, diffusion_coeff, ...
+        aging_red, dt, num_steps);
+
+    rng(r);
+    [~, pt_comb] = HeterodimerInfection_combined( ...
+        A, CoordTable, ...
+        k0, k1, ktilde1, k12, diffusion_coeff, ...
+        dt_aging, dt_treat, T_end, t_switch, ...
+        aging_red, cure_red);
+
+    avg_dyn  = avg_dyn  + mean(pt_dyn, 2);
+    avg_comb = avg_comb + mean(pt_comb, 2);
+end
+
+avg_dyn  = avg_dyn  / Nrep;
+avg_comb = avg_comb / Nrep;
+
+% plot delle curve mediate
+figure; hold on;
+plot(t_sol,     avg_dyn,  'g-', 'LineWidth', 2);
+plot(t_comb_hd, avg_comb, 'm-', 'LineWidth', 2);
+xline(t_switch,'--k','Switch time','LineWidth',1.5);
+xlabel('Time (years)');
+ylabel('Mean misfolded conc.');
+legend('Aging only (avg)', 'Aging + Cure (avg)', 'Switch time', 'Location','best');
+grid on; hold off;
+
 %% 12. Comparative plot (Heterodimer: Baseline / Aging / Cure / Aging+Cure)
 
 % — riutilizzo dei risultati già calcolati —
@@ -127,3 +163,4 @@ legend( ...
   'Location','best' );
 grid on; hold off;
 
+inoltre
