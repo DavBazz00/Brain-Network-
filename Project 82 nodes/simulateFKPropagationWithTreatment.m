@@ -40,7 +40,7 @@ function [t_baseline, c_baseline, t_treatment, c_treatment] = simulateFKPropagat
     % Use the last state of the pre-treatment phase as the initial condition for dynamic propagation.
     num_steps_post = num_steps - n_switch;
     c_init = c_pre(end, :)';  % Convert last state from row to column
-    [t_post, c_post] = FK_propagation_dynamic(A, CoordTable, diffusion, a, dt, num_steps_post, edge_reduction, c_init);
+    [t_post, c_post] = FK_propagation_treatment_dynamic(A, CoordTable, diffusion, a, dt, num_steps_post, edge_reduction, c_init);
 
     % Adjust the post-treatment time vector so it starts at t_switch
     t_post_adjusted = t_post + t_pre(end);
