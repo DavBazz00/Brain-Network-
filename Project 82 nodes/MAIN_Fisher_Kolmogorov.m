@@ -52,30 +52,33 @@ plotSelectedNodes_FK(A, CoordTable, 5e-4, 0.5, 0.4, 100);
 
 %% 10. Simulate treatment scenario
 t_switch = 10;      % Time at which treatment starts (years), realistically could be 10y or more
-dt = 1; num_steps = 30;
+dt1 = 0.4; dt2 = 1; num_steps = 40;
 edge_reduction = 0.20;
-[t_baseline, c_baseline, t_treatment, c_treatment] = simulateFKPropagationWithTreatment(A, CoordTable, diffusion, a, dt, num_steps, t_switch, edge_reduction);
+[t_baseline, c_baseline, t_treatment, c_treatment] = simulateFKPropagationWithTreatment(A, CoordTable, diffusion, a, dt1, dt2, num_steps, t_switch, edge_reduction);
 
 plotPropagationWithTreatment(t_baseline, c_baseline, t_treatment, c_treatment, t_switch, 'Baseline vs. Treatment (post-switch) FK Propagation');
 
-%% 11. Combined Aging + Treatment
-dt_aging        = 0.4;      % passo per aging
-dt_treatment    = 1;        % intervallo cure
-T_end           = 40;       % durata simulazione
-t_switch        = 10;       % inizio cura  
-aging_red       = 0.20;      % fattore di aging per step
-cure_red        = 0.20;     % riduzione globale cure
+%% 11. Simulazione treatment con nuova cura (senza usare più FK_propagation_combined)
 
-% Simulazione
-[t_comb, c_comb] = FK_propagation_combined( ...
-    A, CoordTable, diffusion, a, ...
-    dt_aging, dt_treatment, T_end, ...
-    t_switch, aging_red, cure_red );
+% Parametri
+dt1        = 0.4;      % passo prima dello switch (anni)
+dt2        = 1.0;      % passo dopo lo switch (anni)
+num_steps  = 40;       % numero totale di step a dt2
+t_switch   = 10;       % anno di inizio trattamento
+edge_reduction = 0.20; % fattore di riduzione per la cura
 
-% Plot
-plotAvgInfectionConcentration( ...
-    t_comb, c_comb, ...
-    'Average conc. with Aging + Annual Treatment' );
+% Lancio la simulazione: 
+% - baseline non trattata viene calcolata internamente via FK_propagation
+% - post-switch usa FK_propagation_treatment_dynamic con nuova cura
+[t_baseline, c_baseline, t_treatment, c_treatment] = ...
+    simulateFKPropagationWithTreatment( ...
+        A, CoordTable, diffusion, a, ...
+        dt1, dt2, num_steps, ...
+        t_switch, edge_reduction );
+
+% (Opzionale) Plot di controllo della sola curva Aging+Cure
+plotAvgInfectionConcentration(t_comb, c_comb, ...
+    'Average conc. con nuova cura (simulateFKPropagationWithTreatment)');
 
 %% 12. Comparative plot (reuse existing data)
 
