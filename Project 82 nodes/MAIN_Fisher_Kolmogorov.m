@@ -58,7 +58,7 @@ edge_reduction = 0.20;
 
 plotPropagationWithTreatment(t_baseline, c_baseline, t_treatment, c_treatment, t_switch, 'Baseline vs. Treatment (post-switch) FK Propagation');
 
-%% 11. Simulazione treatment con nuova cura (senza usare più FK_propagation_combined)
+%% 11. Simulazione treatment con nuova cura (senza usare più FK_propagation_combined, addio combined, da togliere)
 
 % Parametri
 dt1        = 0.4;      % passo prima dello switch (anni)
@@ -78,7 +78,7 @@ edge_reduction = 0.20; % fattore di riduzione per la cura
 
 % (Opzionale) Plot di controllo della sola curva Aging+Cure
 plotAvgInfectionConcentration(t_comb, c_comb, ...
-    'Average conc. con nuova cura (simulateFKPropagationWithTreatment)');
+    'Average conc. con nuova cura');
 
 %% 12. Comparative plot (reuse existing data)
 
