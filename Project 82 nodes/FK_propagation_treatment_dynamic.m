@@ -25,7 +25,7 @@ function [t_sol, c_sol] = FK_propagation_treatment_dynamic(A, CoordTable, diffus
             E = numel(iList);
             if E>0
                 minX = floor(0.2*E);
-                maxX = ceil (0.9*E);
+                maxX = ceil (0.5*E);
                 % draw X ∈ {minX,…,maxX}
                 X = minX + randi(max(1,maxX-minX+1))-1;
 
