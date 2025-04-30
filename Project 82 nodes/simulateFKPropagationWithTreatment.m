@@ -1,52 +1,57 @@
-function [t_baseline, c_baseline, t_treatment, c_treatment] = simulateFKPropagationWithTreatment(A, CoordTable, diffusion, a, dt1,dt2, num_steps, t_switch, edge_reduction)
-% SIMULATEFKPROPAGATIONWITHTREATMENT Simulates two scenarios:
-%   1. Baseline (untreated) propagation using FK_propagation over the full time.
-%   2. A treatment scenario where:
-%        - Propagation is simulated untreated from t = 0 to t_switch,
-%        - Then, from t = t_switch onward, dynamic edge variation is used
-%          (using FK_propagation_dynamic with an initial condition).
+function [t_baseline, c_baseline, t_treatment, c_treatment] = simulateFKPropagationWithTreatment(...
+    A, CoordTable, diffusion, a, dt1, dt2, num_steps, t_switch, edge_reduction)
+% SIMULATEFKPROPAGATIONWITHTREATMENT
+%   1) Baseline (untreated) con FK_propagation
+%   2) Pre-trattamento fino a t_switch con FK_propagation
+%   3) Post-trattamento da t_switch a fine con FK_propagation_treatment_dynamic
 %
-% INPUTS:
-%   A             - Adjacency matrix.
-%   CoordTable    - Table with node coordinates and region labels.
-%   diffusion     - Diffusion parameter.
-%   a             - Logistic growth rate parameter.
-%   dt            - Time step size (in years).
-%   num_steps     - Total number of simulation steps.
-%   t_switch      - Time at which the treatment starts (in years).
-%   edge_reduction- Edge weight reduction factor for the dynamic treatment.
+% INPUT:
+%   A             – matrice di adiacenza
+%   CoordTable    – tabella con coordinate e regioni (colonna 4 = regione)
+%   diffusion     – coefficiente di diffusione
+%   a             – tasso di crescita logistica
+%   dt1           – passo temporale per baseline e pre-trattamento
+%   dt2           – passo temporale per post-trattamento
+%   num_steps     – tempo totale simulazione (in anni)
+%   t_switch      – tempo di inizio trattamento (in anni)
+%   edge_reduction– fattore di riduzione pesi per FK_propagation_treatment_dynamic
 %
-% OUTPUTS:
-%   t_baseline    - Time vector for the full baseline (untreated) simulation.
-%   c_baseline    - Concentration matrix from the baseline simulation.
-%   t_treatment   - Combined time vector for the treatment scenario.
-%   c_treatment   - Combined concentration matrix for the treatment scenario.
-%
-% Note: The switch time must be less than the total simulation time.
+% OUTPUT:
+%   t_baseline    – vettore temporale per la simulazione baseline
+%   c_baseline    – matrice concentrazioni per la simulazione baseline
+%   t_treatment   – vettore temporale combinato (pre + post treatment)
+%   c_treatment   – matrice concentrazioni combinata (pre + post treatment)
 
-    % Determine the simulation step at which to switch (must be < num_steps)
+    %--- calcolo numero passi ---
+    % passi per la fase baseline (tutto a dt1)
+    n_steps_baseline = round(num_steps / dt1);
+    % passi di pre-trattamento (dt1)
     n_switch = round(t_switch / dt2);
-    if n_switch >= num_steps
-        error('Switch time must be less than the total simulation time.');
+    if n_switch >= n_steps_baseline
+        error('t_switch deve essere minore del tempo totale num_steps.');
     end
-
-    % --- Baseline Simulation (untreated) ---
-    [t_baseline, c_baseline] = FK_propagation(A, CoordTable, diffusion, a, dt1, num_steps/dt1);
-
-    % --- Pre-Treatment Simulation: from t = 0 to t = t_switch ---
-    [t_pre, c_pre] = FK_propagation(A, CoordTable, diffusion, a, dt1, n_switch/dt1);
-
-    % --- Post-Treatment Simulation: from t = t_switch to t_end ---
-    % Use the last state of the pre-treatment phase as the initial condition for dynamic propagation.
+    % passi post-trattamento (dt2)
+    % remaining_time = num_steps - n_switch * dt1;
     num_steps_post = num_steps - n_switch;
-    c_init = c_pre(end, :)';  % Convert last state from row to column
-    [t_post, c_post] = FK_propagation_treatment_dynamic(A, CoordTable, diffusion, a, dt2, num_steps_post, edge_reduction, c_init);
 
-    % Adjust the post-treatment time vector so it starts at t_switch
-    t_post_adjusted = t_post + t_pre(end);
+    %--- 1) Baseline Simulation ---
+    [t_baseline, c_baseline] = FK_propagation(...
+        A, CoordTable, diffusion, a, dt1, n_steps_baseline);
 
-    % --- Combine the Pre- and Post-Treatment Segments ---
-    % Remove the duplicate time point at the switch for continuity.
-    t_treatment = [t_pre, t_post_adjusted(2:end)];
-    c_treatment = [c_pre; c_post(2:end, :)];
+    %--- 2) Pre-Treatment Simulation ---
+    [t_pre, c_pre] = FK_propagation(...
+        A, CoordTable, diffusion, a, dt1, n_switch);
+
+    %--- 3) Post-Treatment Simulation ---
+    % condizione iniziale = ultimo stato di pre-trattamento
+    c_init = c_pre(end, :)';
+    [t_post, c_post] = FK_propagation_treatment_dynamic(...
+        A, CoordTable, diffusion, a, dt2, num_steps_post, edge_reduction, c_init);
+
+    % riallineo l’asse dei tempi in modo che t_post(1) = t_pre(end)
+    t_post = t_post + t_pre(end);
+
+    %--- concatenazione (tolgo il punto duplicato a t_switch) ---
+    t_treatment = [t_pre,       t_post(2:end)];
+    c_treatment = [c_pre;       c_post(2:end, :)];
 end
