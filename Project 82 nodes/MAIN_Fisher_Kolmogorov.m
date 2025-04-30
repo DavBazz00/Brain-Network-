@@ -51,7 +51,7 @@ plotMultiAlpha_FK(A, CoordTable, diffusion, dt, num_steps);
 plotSelectedNodes_FK(A, CoordTable, 5e-4, 0.5, 0.4, 100);
 
 %% 10. Simulate treatment scenario
-t_switch = 10;      % Time at which treatment starts (years), realistically could be 10y or more
+t_switch = 15.2;      % Time at which treatment starts (years), realistically could be 10y or more
 dt1 = 0.4; dt2 = 1; num_steps = 40;
 edge_reduction = 0.20;
 [t_baseline, c_baseline, t_treatment, c_treatment] = simulateFKPropagationWithTreatment(A, CoordTable, diffusion, a, dt1, dt2, num_steps, t_switch, edge_reduction);
