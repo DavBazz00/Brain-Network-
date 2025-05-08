@@ -47,10 +47,8 @@ plotComparisonAvgConcentration(t_sol, c_sol, t_sol_dinamic, c_sol_dinamic, 'Aver
 %% 8. Plot average concentration with different values of alpha
 plotMultiAlpha_FK(A, CoordTable, diffusion, dt, num_steps);
 
-%% 9. Plot average infection with starting point different nodes (FK) # NON VOGLIAMO PIU INSERIRLO
-plotSelectedNodes_FK(A, CoordTable, 5e-4, 0.5, 0.4, 100);
 
-%% 10. Simulate treatment scenario
+%% 9. Simulate treatment scenario
 t_switch = 15.2;      % Time at which treatment starts (years), realistically could be 10y or more
 dt1 = 0.4; dt2 = 1; num_steps = 40;
 edge_reduction = 0.20;
@@ -58,7 +56,7 @@ edge_reduction = 0.20;
 
 plotPropagationWithTreatment(t_baseline, c_baseline, t_treatment, c_treatment, t_switch, 'Baseline vs. Treatment (post-switch) FK Propagation');
 
-%% 11. Simulazione treatment con nuova cura (senza usare più FK_propagation_combined, addio combined, da togliere)
+%% 10. Simulazione treatment con nuova cura (senza usare più FK_propagation_combined, addio combined, da togliere)
 
 % Parametri
 dt1        = 0.4;      % passo prima dello switch (anni)
@@ -80,35 +78,9 @@ edge_reduction = 0.20; % fattore di riduzione per la cura
 plotAvgInfectionConcentration(t_comb, c_comb, ...
     'Average conc. con nuova cura');
 
-%% 12. Comparative plot (reuse existing data)
+%% 11. Comparison of Four Scenarios (FK)
 
-% Calcolo delle medie (non ricalcoliamo le simulazioni)
-avg_baseline = mean(c_sol,           2);   % da section 2
-avg_aging    = mean(c_sol_dinamic,   2);   % da section 5
-avg_cure     = mean(c_treatment,     2);   % da section 10
-avg_combined = mean(c_comb,          2);   % da section 11
+plotFourScenariosFK( ...
+  A, CoordTable, diffusion, a, edge_reduction, ...
+  dt_aging, dt_treat, t_switch, t_end );
 
-% Estrapolo i vettori tempo già disponibili
-t_base     = t_sol;         % 0:0.4:40
-t_aging    = t_sol_dinamic; % 0:0.4:40
-t_cure     = t_treatment;   % 0:1:30
-t_combined = t_comb;        % 0:0.2:40 (o quanto hai definito)
-
-% Plot unico
-figure; hold on;
-plot(t_base,     avg_baseline, 'b-' , 'LineWidth', 2);
-plot(t_aging,    avg_aging,    'g-' , 'LineWidth', 2);
-plot(t_cure,     avg_cure,     'r-' , 'LineWidth', 2);
-plot(t_combined, avg_combined, 'm-' , 'LineWidth', 2);
-xline(t_switch, '--k', 'Switch', 'LineWidth', 1.5);
-
-xlabel('Time (years)');
-ylabel('Average Infection Concentration');
-legend( ...
-  '1) Baseline (no aging, no cure)', ...
-  '2) Aging only', ...
-  '3) Cure only', ...
-  '4) Aging + Cure', ...
-  'Switch time', ...
-  'Location','best' );
-grid on; hold off;
