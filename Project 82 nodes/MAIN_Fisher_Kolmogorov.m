@@ -58,25 +58,25 @@ plotPropagationWithTreatment(t_baseline, c_baseline, t_treatment, c_treatment, t
 
 %% 10. Simulazione treatment con nuova cura (senza usare più FK_propagation_combined, addio combined, da togliere)
 
-% Parametri
-dt1        = 0.4;      % passo prima dello switch (anni)
-dt2        = 1.0;      % passo dopo lo switch (anni)
-num_steps  = 40;       % numero totale di step a dt2
-t_switch   = 10;       % anno di inizio trattamento
-edge_reduction = 0.20; % fattore di riduzione per la cura
+% parameters
+dt_aging      = 0.4;
+dt_treat      = 1;
+num_steps_t   = 40;
+edge_reduction = 0.20;
+t_switch      = 15;
+t_end         = 40;
 
-% Lancio la simulazione: 
-% - baseline non trattata viene calcolata internamente via FK_propagation
-% - post-switch usa FK_propagation_treatment_dynamic con nuova cura
-[t_baseline, c_baseline, t_treatment, c_treatment] = ...
-    simulateFKPropagationWithTreatment( ...
-        A, CoordTable, diffusion, a, ...
-        dt1, dt2, num_steps, ...
-        t_switch, edge_reduction );
+% 10.1 run static‐baseline up to t_end
+num_steps_base = round(t_end / dt_aging);
+[t_base, c_base] = FK_propagation(A, CoordTable, diffusion, a, dt_aging, num_steps_base);
 
-% (Opzionale) Plot di controllo della sola curva Aging+Cure
-plotAvgInfectionConcentration(t_comb, c_comb, ...
-    'Average conc. con nuova cura');
+% 10.2 run cure scenario (treatment only)
+[t_treat, c_treat] = FK_propagation_treatment(A, CoordTable, diffusion, a, edge_reduction,dt_aging, dt_treat, t_switch, t_end);
+
+% 10.3 plot baseline vs cure
+plotPropagationWithTreatment(t_base, c_base, t_treat, c_treat, t_switch,'Baseline vs. Cure (FK)' );
+
+
 
 %% 11. Comparison of Four Scenarios (FK)
 
