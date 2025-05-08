@@ -3,8 +3,8 @@ addpath('/Users/Speranza/Desktop/VSCODE/matlab/biomedicina/82_nodes/project_82_w
 
 %% 1. Load file
 
-edgeFile = '/Users/Speranza/Desktop/VSCODE/matlab/biomedicina/82_nodes/Edge.csv';
-nodeFile = '/Users/Speranza/Desktop/VSCODE/matlab/biomedicina/82_nodes/Node.csv';
+edgeFile = 'Edge.csv';
+nodeFile = 'Node.csv';
 
 [A, CoordTable, Coord] = AdjacencyMatrix(edgeFile, nodeFile);
 
