@@ -48,16 +48,7 @@ plotComparisonAvgConcentration(t_sol, c_sol, t_sol_dinamic, c_sol_dinamic, 'Aver
 plotMultiAlpha_FK(A, CoordTable, diffusion, dt, num_steps);
 
 
-%% 9. Simulate treatment scenario
-t_switch = 15.2;      % Time at which treatment starts (years), realistically could be 10y or more
-dt1 = 0.4; dt2 = 1; num_steps = 40;
-edge_reduction = 0.20;
-[t_baseline, c_baseline, t_treatment, c_treatment] = simulateFKPropagationWithTreatment(A, CoordTable, diffusion, a, dt1, dt2, num_steps, t_switch, edge_reduction);
-
-plotPropagationWithTreatment(t_baseline, c_baseline, t_treatment, c_treatment, t_switch, 'Baseline vs. Treatment (post-switch) FK Propagation');
-
-%% 10. Simulazione treatment con nuova cura (senza usare più FK_propagation_combined, addio combined, da togliere)
-
+%% 9. Simulazione treatment con nuova cura 
 % parameters
 dt_aging      = 0.4;
 dt_treat      = 1;
@@ -66,19 +57,19 @@ edge_reduction = 0.20;
 t_switch      = 15;
 t_end         = 40;
 
-% 10.1 run static‐baseline up to t_end
+% 9.1 run static‐baseline up to t_end
 num_steps_base = round(t_end / dt_aging);
 [t_base, c_base] = FK_propagation(A, CoordTable, diffusion, a, dt_aging, num_steps_base);
 
-% 10.2 run cure scenario (treatment only)
+% 9.2 run cure scenario (treatment only)
 [t_treat, c_treat] = FK_propagation_treatment(A, CoordTable, diffusion, a, edge_reduction,dt_aging, dt_treat, t_switch, t_end);
 
-% 10.3 plot baseline vs cure
+% 9.3 plot baseline vs cure
 plotPropagationWithTreatment(t_base, c_base, t_treat, c_treat, t_switch,'Baseline vs. Cure (FK)' );
 
 
 
-%% 11. Comparison of Four Scenarios (FK)
+%% 10. Comparison of Four Scenarios (FK)
 
 plotFourScenariosFK( ...
   A, CoordTable, diffusion, a, edge_reduction, ...
