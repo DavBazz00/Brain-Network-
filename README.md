@@ -49,6 +49,10 @@ Contains MATLAB functions for simulating and plotting each model.
 
 ---
 
+### **Reports/**
+The final reports of our work (in Italian) in `.pdf` format.
+
+---
 ### **Images/**  
 There are the most important plots and result in a `.png` format.
 
