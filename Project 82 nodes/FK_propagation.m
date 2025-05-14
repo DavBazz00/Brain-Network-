@@ -54,16 +54,16 @@ function [t_sol, c_sol] = FK_propagation(A, CoordTable, diffusion, a, dt, num_st
     % dc/dt = - L*c*diffusion + a*c.*(1-c)
     f = @(t, c) -L*c*diffusion + a*c.*(1-c);
     
-    disp('Starting explicit time integration...  ');
+    disp('Starting explicit time integration...');
     try
-        % Perform implicit time integration (here using a forward Euler step)
+        % Perform explicit time integration (here using a forward Euler step)
         for i = 2:length(t_sol)
             t = t_sol(i);
             temp = c_sol(i-1, :)';    % Convert previous state to column vector
             temp = temp + dt * f(t, temp); % Compute the update
             c_sol(i, :) = temp';      % Convert back to row vector and save
         end
-        disp('Implicit time integration completed successfully.');
+        disp('Explicit time integration completed successfully.');
     catch ME
         rethrow(ME);
     end
