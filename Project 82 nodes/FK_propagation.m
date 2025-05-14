@@ -54,7 +54,7 @@ function [t_sol, c_sol] = FK_propagation(A, CoordTable, diffusion, a, dt, num_st
     % dc/dt = - L*c*diffusion + a*c.*(1-c)
     f = @(t, c) -L*c*diffusion + a*c.*(1-c);
     
-    disp('Starting implicit time integration...');
+    disp('Starting explicit time integration...');
     try
         % Perform implicit time integration (here using a forward Euler step)
         for i = 2:length(t_sol)
