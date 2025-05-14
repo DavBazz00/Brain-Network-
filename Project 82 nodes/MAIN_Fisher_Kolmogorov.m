@@ -1,5 +1,5 @@
 clear; close all; clc;
-addpath('/Users/Speranza/Desktop/VSCODE/matlab/biomedicina/Brain-Network-/Project 82 nodes')
+% addpath('/Users/Speranza/Desktop/VSCODE/matlab/biomedicina/Brain-Network-/Project 82 nodes')
 
 %% 1. Load file
 edgeFile = 'Edge.csv';
